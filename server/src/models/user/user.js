@@ -1,7 +1,7 @@
 const  mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const {schema , options} = require('./schema')
+const {users , options} = require('./schema')
 
-const songSchema = new Schema(schema , options)
+const songSchema = new Schema(users , options)
 
 module.exports = mongoose.model('users' , songSchema)
