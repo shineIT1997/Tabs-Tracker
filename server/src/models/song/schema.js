@@ -14,6 +14,10 @@ const song = {
         type: String,
         default: 'unknown'
     },
+    rating: {
+        type: Number,
+        default: 0
+    },
     imgAlbum: {
         type: String,
     },
@@ -26,8 +30,9 @@ const song = {
         required: 'Please enter lyricsAndTabs!'
     },
     userID: {
-        type: Schema.Types.ObjectId ,
-        ref: 'users'
+        type: String ,
+        ref: 'users',
+        required: 'Please enter UserID'
     }
 }
 

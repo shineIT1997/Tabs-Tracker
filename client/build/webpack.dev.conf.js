@@ -58,6 +58,10 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       inject: true
     }),
     // copy custom static assets
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
+    }), //jquery
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, '../static'),

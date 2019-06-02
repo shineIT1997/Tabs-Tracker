@@ -1,21 +1,18 @@
 <template>
     <div>
         <header-home></header-home>
-        <nav-menu></nav-menu>
-        <list></list>
+        <home-content></home-content>
     </div>
 </template>
 
 <script>
 import headerHome from './home/header'
-import NavMenu from './home/nav'
-import List from './home/list'
+import homeContent from './home/body'
 export default {
   components: {
     headerHome,
-    List,
-    NavMenu
-  }
+    homeContent
+  },
 }
 </script>
 

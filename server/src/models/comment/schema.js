@@ -1,7 +1,34 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema
 
-
-const schema = {
-
+const comment = {
+    userID: {
+        type: Schema.Types.ObjectId,
+        ref: 'users',
+    },
+    songID: {
+        type: Schema.Types.ObjectId,
+        ref: 'songs',
+        required: 'Please enter SongsID'
+    },
+    content: {
+        type: String,
+        required: 'Please enter content!'
+    },
+    root: {
+        type: Boolean,
+        default: true
+    },
+    show: {
+        type: Boolean,
+        default: false
+    },
+    reply: [
+        {
+            type: Schema.Types.ObjectId ,
+            ref: 'comments'
+        }
+    ]
 }
 
 
@@ -13,6 +40,6 @@ const options ={
 }
 
 module.exports = {
-    schema ,
+    comment ,
     options
 }

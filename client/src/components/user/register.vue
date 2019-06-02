@@ -1,22 +1,44 @@
 <template>
 <div>
   <header-home></header-home>
-  <form class="modal-content " action="/action_page.php">
+  <form  class="modal-content " v-on:submit.prevent="register">
     <div class="container panel panel-primary">
         <div class="panel-heading">
-            <h1 >Sign Up</h1>
+            <h1>Sign Up</h1>
             <p>Please fill in this form to create an account.</p>
         </div>
         <div class="panel-body">
+            <label for="userName"><b>User Name</b></label>
+            <input data-vv-validate-on="blur" v-validate="'required'" v-model="username" type="text" placeholder="Enter User Name" name="userName">
+            <small 
+            v-if="errors.has('userName')"
+            class="text-danger form-text">
+                {{ errors.first('userName') }}
+            </small><br>
             <label for="email"><b>Email</b></label>
-            <input type="text" placeholder="Enter Email" name="email" required>
+            <input data-vv-validate-on="blur" v-validate="'required|email'" v-model="email" type="text" placeholder="Enter Email" name="email" >
+            <small 
+            v-if="errors.has('email')"
+            class="text-danger form-text">
+                {{ errors.first('email') }}
+            </small><br>
             <label for="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="psw" required>
+            <input data-vv-validate-on="blur" v-validate="'required|min:6'" v-model="password" type="password" placeholder="Enter Password" ref="password" name="password">
+            <small 
+            v-if="errors.has('password')"
+            class="text-danger form-text">
+                {{ errors.first('password') }}
+            </small><br>
             <label for="psw-repeat"><b>Repeat Password</b></label>
-            <input type="password" placeholder="Repeat Password" name="psw-repeat" required>
+            <input data-vv-validate-on="blur" v-validate="'required|confirmed:password'" v-model="confPass" type="password" placeholder="Repeat Password" name="password-repeat">
+            <small 
+            v-if="errors.has('password-repeat')"
+            class="text-danger form-text">
+                {{ errors.first('password-repeat') }}
+            </small>
             <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
             <div class="clearfix">
-                <button class="signupbtn">Sign Up</button>
+                <button>Sign Up</button>
             </div>
             <p>if you had a account, let <a @click="navigateTo({name: 'login'})">Login</a></p>
         </div>
@@ -26,15 +48,36 @@
 </template>
 <script>
 import headerHome from '../home/header'
+import { Validator } from 'vee-validate'
 export default {
-  name: 'login',
+  name: 'register',
   components: {
     headerHome
+  },
+  data () {
+    return {
+      username:'',
+      email: '',
+      password: '',
+      confPass: ''
+    }
   },
   methods: {
     navigateTo (route) {
       console.log(route)
       this.$router.push(route)
+    },
+    register () {
+      this.$validator.validate()
+      .then(valid => {
+        if(valid) {
+          this.$store.users.dispatch('register', {
+            username: this.username,
+            email: this.email,
+            password: this.password
+          })
+        }
+      })
     }
   }
 }

@@ -1,40 +1,73 @@
 <template>
 <div>
   <header-home></header-home>
-  <form class="modal-content animate">
+  <form class="modal-content animate" v-on:submit.prevent="login">
     <div class="container panel panel-primary">
       <div class="panel-heading">
         <h1 >Login</h1>
       </div>
       <div class="panel-body">
       <label for="username"><b>Username or Email</b></label>
-      <input type="text" placeholder="Enter Username" name="username" required>
-      <label for="psw"><b>Password</b></label>
-      <input type="password" placeholder="Enter Password" name="psw" required>
+      <input v-model="user" data-vv-validate-on="blur" v-validate="'required'" type="text" placeholder="Enter Username or Email" name="username">
+      <small 
+      v-if="errors.has('username')"
+      class="text-danger form-text">
+          {{ errors.first('username') }}
+      </small><br>
+      <label for="password"><b>Password</b></label>
+      <input v-model="password" data-vv-validate-on="blur" v-validate="'required'" type="password" placeholder="Enter Password" name="password">
+      <small 
+      v-if="errors.has('password')"
+      class="text-danger form-text">
+          {{ errors.first('password') }}
+      </small><br>
       <label>
         <input type="checkbox" checked="checked" name="remember"> Remember me
       </label>
-      <button type="submit">Login</button>
+      <button>Login</button>
       </div>
       <div class="container" style="background-color:#f1f1f1">
       <span class="psw">Forgot <a href="#">password?</a> or </span> <a @click="navigateTo({name: 'register'})">Sign Up</a>
       </div>
     </div>
   </form>
+
 </div>
 </template>
 
 <script>
 import headerHome from '../home/header'
+import { Validator } from 'vee-validate'
+// import { mapGetters } from 'vuex'
 export default {
   name: 'login',
   components: {
     headerHome
   },
+  data () {
+    return {
+      user: '',
+      password: ''
+    }
+  },
   methods: {
     navigateTo (route) {
       console.log(route)
       this.$router.push(route)
+    },
+     login () {
+      this.$validator.validate()
+      .then(async valid => {
+        if(valid) {
+          await this.$store.users.dispatch('login', {
+            username: this.user,
+            password: this.password
+          })
+          if(localStorage.token) {
+            this.$router.push({ name : 'home'})
+          }
+        }
+      })
     }
   }
 

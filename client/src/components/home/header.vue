@@ -4,16 +4,21 @@
             <a @click="navigateTo({name: 'home'})"><h1>Tabs-Tracker</h1></a>
             <p>My supercool header</p>
         </div>
+        <navCus></navCus>
     </div>
 </template>
 <script>
-
+import navCus from './nav'
 export default {
   name: 'header-tabs',
+  components: {
+    navCus
+  },
   methods: {
-    navigateTo (route) {
+    async navigateTo (route) {
       console.log(route)
-      this.$router.push(route)
+      await this.$router.push(route)
+      location.reload();
     }
   }
 }

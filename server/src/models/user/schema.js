@@ -17,6 +17,9 @@ const users = {
         type: String,
         required: 'Please enter password!'
     },
+    avartar: {
+        type: String,
+    },
     jurisdiction: {
         type: String,
         required: 'Please enter jurisdiction',
@@ -26,6 +29,18 @@ const users = {
         {
             type: Schema.Types.ObjectId ,
             ref: 'songs'
+        }
+    ],
+    bookmarks: [
+        {
+            type: Schema.Types.ObjectId ,
+            ref: 'songs'
+        }
+    ],
+    flowwing: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'users'
         }
     ]
 }

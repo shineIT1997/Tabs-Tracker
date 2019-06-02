@@ -21,3 +21,22 @@ mongoose.connect(`${config.db.url}`, {useNewUrlParser: true})
 app.listen(config.port , () => {
     console.log(`listening on port `);
 })
+
+// bcrypt.genSalt(10 ,  function (err , salt) {
+//     bcrypt.hash('12345678' , salt , function(err , hash) {
+        
+//         user = new admin({
+//             email: 'abc@gmail.com',
+//             password: hash,
+//             usersName: 'thanhdat',
+//             jurisdiction: 'admin'
+//         })
+//         user.save()
+//         .then(response => {
+//             console.log(response);
+//             })
+//         .catch(error => {
+//             console.log(`error ${error}`);
+//         })
+//     })
+// })

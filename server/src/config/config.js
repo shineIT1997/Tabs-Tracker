@@ -9,7 +9,7 @@ const config = {
         url: 'mongodb://localhost:27017/tabs-tracker' //url to connect database
     },
     authentication: {
-        jwtSecret: process.env.JWR_SECRET || 'my secret' //key to use JWT 
+        jwtSecret: process.env.JWR_SECRET || 'cuuxeom' //key to use JWT 
     },
     port: process.env.PORT || '8081'
 }

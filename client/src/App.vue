@@ -6,10 +6,15 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  methods: {
+      navigateTo (route) {
+      this.$router.push(route)
+    },
+  }
 }
 </script>
-
+  
 <style>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
