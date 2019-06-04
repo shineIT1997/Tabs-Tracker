@@ -10,7 +10,7 @@ export default new Vuex.Store({
     listNewSong: null,
     songDetail: null,
     mess: null,
-    paganation: Number
+    pagination: Number
 
   },
   getters: {
@@ -23,7 +23,7 @@ export default new Vuex.Store({
       let perPage = data.data.perPage //tổng số items trên trang
       console.log({perPage: perPage});
       
-      let currentPage = data.data.currentPage -1 //tổng số items trên trang
+      let currentPage = data.data.currentPage -1 //trang hien tai
       console.log({currentPage: currentPage});
       
       let items = {}
@@ -36,9 +36,8 @@ export default new Vuex.Store({
         }
       }
       console.log(allSong.length);
-      state.paganation = Math.ceil(allSong.length/perPage) 
-      console.log(allSong);
-      
+      state.pagination = Math.ceil(allSong.length/perPage) 
+      console.log({pagination : state.pagination});
       console.log({items: items});
       
       state.popularListSong = items

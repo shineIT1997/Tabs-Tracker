@@ -41,27 +41,20 @@
                         </v-btn>
                     </div>
                     <div class="right">
-                        {{(song.imgAlbum)?song.imgAlbum:'Unknown'}}
+                        <img :src="song.imgAlbum" alt="">
                     </div>
                 </div>
             </div>
-            <ul class="pagination" v-if="listSong.paganation">
+            <ul class="pagination">
               <li class="page-item"><a class="page-link" @click="prev()">Previous</a></li>
-              <li>
-                <a class="pagi active"
-                  @click="getPag((currentPage  >= listSong.paganation)?currentPage-2:(currentPage  >= listSong.paganation -1)?currentPage-1:currentPage)">
-                  {{(currentPage  >= listSong.paganation)?currentPage-2:(currentPage  >= listSong.paganation -1)?currentPage-1:currentPage }}</a>
-                <a class="pagi" 
-                  @click="getPag((currentPage  >= listSong.paganation)?currentPage-1:(currentPage  >= listSong.paganation -1)?currentPage:currentPage+1)">
-                  {{(currentPage  >= listSong.paganation)?currentPage-1:(currentPage  >= listSong.paganation -1)?currentPage:currentPage+1 }}</a>
-                <a class="pagi"
-                  @click="getPag((currentPage  >= listSong.paganation)?currentPage:(currentPage  >= listSong.paganation -1)?currentPage+1:currentPage+2)">
-                  {{(currentPage  >= listSong.paganation)?currentPage:(currentPage  >= listSong.paganation -1)?currentPage+1:currentPage+2 }}</a>
+              <li v-for="page in pagination" :key="page">
+                <a v-bind:class="(page == 1)?'active':false" class="pagi" @click="getPag(page)">{{page }}</a>
               </li>
               <li class="page-item"><a class="page-link" @click="next()">Next</a></li>
             </ul>
         </div>
         </div>
+        <pre>{{pagination}}</pre>
     </div>
 </template>
 
@@ -74,6 +67,24 @@ export default {
     listSong () {
       return this.$store.songs.getters.getDataSong
     },
+    pagination () {
+      let makeListPagi = {}
+      let pagi = this.$store.songs.getters.getDataSong.pagination
+      for (let i = 0; i < pagi/3 ; i++) {
+        makeListPagi[i] = []
+        for (let index = 0; index < 3; index++) {
+          if(i*3 + index +1 <= pagi) {
+           makeListPagi[i].push(i*3 + index +1)
+          }
+        }
+      }
+      if(this.currentPage%3 == 0)
+      {
+        return makeListPagi[this.currentPage/3 - 1]
+      }
+      let show = Math.floor(this.currentPage/3)
+      return makeListPagi[show]
+    }
   },
   data () {
     return {
@@ -124,7 +135,6 @@ export default {
       perPage: this.perPage,
       currentPage: this.currentPage,
       })
-      this.$forceUpdate()
     },
     next () {
       if(this.currentPage < this.listSong.paganation) {
@@ -135,6 +145,8 @@ export default {
           let isActive = $(getActive[index])
           if(isActive.text() == this.currentPage) {
             isActive.addClass("active")
+            console.log(isActive);
+            
           }
           else {
             isActive.removeClass( "active" )
@@ -145,7 +157,6 @@ export default {
         perPage: this.perPage,
         currentPage: this.currentPage,
       })
-      this.$forceUpdate()
     },
     getCurrentPage () {
 
@@ -237,7 +248,9 @@ img {
 .row {
   border: solid 1px black
 }
-
+.right {
+      width: 100px;
+}
 @media screen and (max-width: 1000px) {
   .column-66,
   .column-33 {

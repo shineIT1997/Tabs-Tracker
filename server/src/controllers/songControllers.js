@@ -60,12 +60,13 @@ module.exports = {
             .sort({ rating : -1 })
             .limit(20)
             .then(async result => {
+                console.log(result);
                 for (let index in result) {
                     if(fs.existsSync(result[index].imgAlbum)) {
-                        console.log('exists');
-                        let img = await fs.readFileSync(result.imgAlbum)  
+                        console.log(typeof result[index].imgAlbum);
+                        let img = await fs.readFileSync(result[index].imgAlbum)  
                         let encoding_img = await img.toString('base64')
-                        result[index].imgAlbum = encoding_img
+                        result[index].imgAlbum = 'data:image/jpeg;base64,'.concat(encoding_img)
                     }
                     else {
                         result[index].imgAlbum = ''
