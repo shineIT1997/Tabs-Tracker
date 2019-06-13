@@ -1,6 +1,6 @@
 <template>
 <div>
-  <header-home></header-home>
+  <nav-header></nav-header>
   <form  class="modal-content " v-on:submit.prevent="register">
     <div class="container panel panel-primary">
         <div class="panel-heading">
@@ -47,12 +47,12 @@
 </div>
 </template>
 <script>
-import headerHome from '../home/header'
+import navHeader from '../home/nav'
 import { Validator } from 'vee-validate'
 export default {
   name: 'register',
   components: {
-    headerHome
+    navHeader
   },
   data () {
     return {
@@ -69,13 +69,16 @@ export default {
     },
     register () {
       this.$validator.validate()
-      .then(valid => {
+      .then(async valid => {
         if(valid) {
-          this.$store.users.dispatch('register', {
+          await this.$store.users.dispatch('register', {
             username: this.username,
             email: this.email,
             password: this.password
           })
+        }
+        if(localStorage.token) {
+          this.$router.push({ name : 'home'})
         }
       })
     }

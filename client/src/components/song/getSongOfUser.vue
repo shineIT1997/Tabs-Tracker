@@ -5,7 +5,7 @@
         <div class="row ">
             <div class="col-sm-8 middle">
                 <h2>All of Mine</h2>
-                <div class="well" v-for="song in listSong" v-bind:key="song._id">
+                <div class="well" v-for="song in listSong.songOfUser" v-bind:key="song._id">
                     <div class="left">
                         <p>Name:  {{song.title}}</p>
                         <p>Artist:  {{song.artist}}</p>
@@ -23,17 +23,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-          <ul class="pagination">
-            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-          </ul>
         </div>
-        </div>
-        <pre>{{listSong}}</pre>
     </div>
 </template>
 
@@ -48,22 +38,24 @@ export default {
   computed: {
     // mix the getters into computed with object spread operator
     listSong () {
-        return this.$store.users.state.songOfUser
+        return this.$store.users.getters.getDataUser
     }
   },
   methods: {
     navigateTo (route) {
       this.$router.push(route)
     },
-    async deleteSong (songID) {
-      await this.$store.songs.dispatch('deleteSong' , {
+    deleteSong (songID) {
+      this.$store.songs.dispatch('deleteSong' , {
         user: localStorage.token,
         song: songID
       })
+      location.reload()
     }
   },
-  async mounted () {
-    await this.$store.users.dispatch('getSongOfUser' , localStorage.token)
+  mounted () {
+    this.$store.users.dispatch('getSongOfUser' , localStorage.token)
+    this.$forceUpdate()
   },
 }
 </script>

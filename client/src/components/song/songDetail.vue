@@ -61,7 +61,7 @@
                                 placeholder="From album">
                         </div>
                         <div class="form-group">
-                            <label class="title">YoutubeLink</label>
+                            <label class="title">YoutubeID</label>
                             <input
                                 v-bind:disabled="isDisabled" 
                                 type="text" 
@@ -95,96 +95,135 @@
                 </div>
               </div>
             </div>
-            <v-btn v-if="loginCheck" @click="edit(song._id)">
+            <v-btn v-if="check.token" @click="edit(song._id)">
               Edit
             </v-btn>
-            <v-btn v-if="loginCheck" @click="bookmark(song._id)">
-              Bookmark
+            <v-btn v-if="check.token" @click="bookmark(song._id)">
+              {{(check.checkBookmark)?(check.checkBookmark.indexOf(song._id)== -1)?'Bookmark':'Unbookmark':'Unbookmark'}}
             </v-btn>
-            <v-btn @click="Love(song._id)">
-              Love
+            <v-btn  v-if="check.token" @click="Love(song._id)">
+              {{(favorites.checkFavorites)?(favorites.checkFavorites.indexOf(song._id)== -1)?'Love':'Loved':'Love'}}
             </v-btn>
         </div>
     </form>
 
     <div>
-      <div class="new-comment panel panel-info">
-        <h1 >Comment: </h1>
-        <div class="panel-body">
-          <input name="comment" v-model="contentComment" 
-                  v-validate="'required'" >
-                  <small 
-                    v-if="errorComment"
-                    class="text-danger form-text">
-                    Please enter comment
-                  </small>
+
+
+    <!-- commment  -->
+
+    <div class="comment-container">
+      <h1> Comments</h1>
+      <div>
+        <form>
+          <textarea
+            name="comment" 
+            v-model="contentComment" 
+            v-validate="'required'" 
+            class="textarea-cmt" 
+            placeholder="Add Your Commment"></textarea>
+          <small 
+              v-if="errorComment"
+              class="text-danger form-text">
+            Please enter comment
+          </small>
+        </form>
+        <button @click.prevent="comment(song._id)" class="main-btn">Comment</button>
+      </div>
+      <div v-for="comment in comments" v-bind:key="comment._id">
+        <div v-if="comment.root" class="comment"  >
+            <div class="img-avatar">
+              <img src="../../assets/image/team3.jpg" alt="">
+            </div>
+            <div class="content-comment">
+              <div class="header-comment">
+                <span class="name-user">
+                  {{(comment.userID)?comment.userID.usersName:'Guest'}}
+                </span>
+                <span class="time">
+                  {{comment.updatedAt}}
+                </span> 
+                <button  @click.prevent="showBoxRep(comment._id)">Reply  <img src="../../assets/image/reply-512.png" alt=""></button>
+              </div>
+              <div class="content-cmt">
+                <p>{{comment.content}}</p>
+              </div>
+            </div>
+            <div class="box-reply" v-bind:class="comment._id">
+              <p>Leave a reply</p>
+              <form>
+                <textarea
+                  v-bind:name="comment._id"
+                  ref="repcmt"
+                  v-validate="'required'"
+                class="textarea-cmt" placeholder="Add Your Commment"></textarea>
+                <small 
+                  v-if="( errorComment == comment._id )?true:false"
+                  class="text-danger form-text">
+                  Please enter comment
+                </small>
+                <button @click.prevent="reply(song._id , comment._id , comment._id )" class="main-btn">Comment</button>
+              </form>
+            </div>
+            <!-- reply -->
+            <div class="reply-content" v-for="rep in comment.reply" v-bind:key="rep._id">
+              <div class="comment">
+                <div class="img-avatar">
+                  <img src="../../assets/image/team3.jpg" alt="">
+                </div>
+                <div class="content-comment">
+                  <div class="header-comment">
+                    <span class="name-user">
+                      {{(rep.userID)?rep.userID.usersName:'Guest'}}
+                    </span>
+                    <span class="time">
+                      {{rep.updatedAt}}
+                    </span> 
+                    <button  @click.prevent="showBoxRep(rep._id)">Reply  <img src="../../assets/image/reply-512.png" alt=""></button>
+                  </div>
+                  <div class="content-cmt">
+                    <p>{{rep.content}}</p>
+                  </div>
+                </div>
+                  <div class="box-reply" v-bind:class="rep._id">
+                    <p>Leave a reply</p>
+                    <form>
+                      <textarea
+                        v-bind:name="rep._id"
+                        ref="repcmt"
+                        v-validate="'required'"
+                      class="textarea-cmt" placeholder="Add Your Commment"></textarea>
+                      <small 
+                        v-if="(errorComment == rep._id)?true:false"
+                        class="text-danger form-text">
+                        Please enter comment
+                      </small>
+                      <button @click.prevent="reply(song._id , comment._id  , rep._id)" class="main-btn">Comment</button>
+                    </form>
+                  </div>
+              </div>
+            </div>
         </div>
-        <button @click.prevent="comment(song._id)">Send</button>
       </div>
     </div>
+    </div>
+
 
     <!-- all comment -->
-    <div>
-      <div  v-for="comment in comments" v-bind:key="comment._id">
-        <div v-if="comment.root" class="all-comment panel panel-primary">
-          <h1 class="panel-heading"> {{(comment.userID)?comment.userID.usersName:'Guest'}}</h1>
-          <div class="panel-body">
-              <p>{{comment.content}}</p>
-                <div class="new-comment panel panel-info">
-                  <h1 >Reply: </h1>
-                  <div class="panel-body">
-                    <input
-                            v-bind:name="comment._id"
-                            ref="repcmt"
-                            v-validate="'required'" >
-                            <small 
-                              v-if="( errorComment == comment._id )?true:false"
-                              class="text-danger form-text">
-                              Please enter comment
-                            </small>
-                  </div>
-                  <v-btn @click.prevent="reply(song._id , comment._id , comment._id )" >Send</v-btn>
-                </div>
-                <pre>{{comment.reply}}</pre>
-                <div v-for="rep in comment.reply" v-bind:key="rep._id">
-                  <div  class="panel panel-info">
-                    <h2 class="panel-heading">{{(rep.userID)?rep.userID.usersName:'Guest'}}</h2>
-                    <div class="panel-body">
-                      <p>{{rep.content}}</p>
-                        <div class="new-comment panel panel-info">
-                        <h1 >Reply: </h1>
-                        <div class="panel-body">
-                          <input
-                                  v-bind:name="rep._id"
-                                  ref="repcmt"
-                                  v-validate="'required'" >
-                                  <small 
-                                    v-if="(errorComment == rep._id)?true:false"
-                                    class="text-danger form-text">
-                                    Please enter comment
-                                  </small>
-                        </div>
-                        <v-btn @click.prevent="reply(song._id , comment._id  , rep._id)" >Send</v-btn>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-        </div>
-
-
-        </div>
-      </div>
-    </div>
+    <hr>
+    <footer-home></footer-home>
   </div>
 </template>
 
 <script>
 import headerHome from '../home/header'
+import footerHome from '../home/footer'
 import { Validator } from 'vee-validate'   
 export default {
   name: 'detailSong',
   components: {
-    headerHome
+    headerHome,
+    footerHome
   },
   computed: {
      song () {
@@ -206,8 +245,11 @@ export default {
     comments () {
       return this.$store.comments.getters.getCommentData.comments
     },
-    loginCheck () {
-      return this.$store.users.getters.getDataUser.token
+    check () {
+      return this.$store.users.getters.getDataUser
+    },
+    favorites () {
+      return this.$store.songs.getters.getDataSong
     },
   },
   data () {
@@ -215,10 +257,16 @@ export default {
       isDisabled: true,
       contentComment: '',
       errorComment: false,
-      repComment: ''
+      repComment: true,
     }
   },
   methods: {
+    Love (songID) {
+      this.$store.songs.dispatch('rating' , {
+        songID : songID,
+        userID: localStorage.token
+      })
+    },
     async comment (songID) {
       this.$validator.validate('comment').then(async valid => {
           if(valid) {
@@ -261,21 +309,30 @@ export default {
       })
     },
     edit (songID) {
-      // submit file bằng formData phải dùng multer ở Back-end
+      // Comment file bằng formData phải dùng multer ở Back-end
       let createsong = document.getElementById('editSong');
       let info = new FormData(createsong);
       info.append('_id' , songID)
       this.$store.songs.dispatch('editSong' , info)
     },
     bookmark (songID) {
-      console.log(localStorage.token);
-      // this.$store.songs.dispatch('editSong' , {
-      //   songID: so
-      // })
+      this.$store.users.dispatch('bookmark' , {
+        songID: songID,
+        userID: localStorage.token
+      })
     },
+    showBoxRep(id) {
+      if(this.repComment) {
+        this.repComment = false
+        $('.'.concat(id)).css({display: 'block'})
+      }
+      else {
+        this.repComment = true
+        $('.'.concat(id)).css({display: 'none'})
+      }
+    }
   },
-  async mounted() {
-    console.log(this.$route.params.songID);  
+  async mounted() { 
     let songID = this.$route.params.songID
     await this.$store.songs.dispatch('getDetailSong' , {
         songID
@@ -288,6 +345,9 @@ export default {
     }
     await this.$store.comments.dispatch('getCommentForSong' , {
       songID
+    })
+    await this.$store.users.dispatch('checkBookmark' , {
+      userID : localStorage.token,
     })
   },
 }
@@ -322,5 +382,124 @@ export default {
     }
     .all-comment{
       text-align: left;
+    }
+    .comment {
+    padding-top: 20px;
+    background-color: #FFF;
+    border-top: 1px solid #546E7A;
+    margin-top: 10px;
+    }
+    .comment-container {
+       width: 70%;
+       margin: auto;
+    }
+    .comment-container h1 {
+      text-align: left;
+    }
+    .img-avatar {
+      display: table-cell;
+      vertical-align: top;
+      padding-right: 20px;
+      padding-left: 20px;
+    }
+    .img-avatar img {
+    width: 70px;
+    vertical-align: middle;
+    border: 0;
+    border-radius: 50%;
+    }
+
+
+    .content-comment {
+      overflow: hidden;
+      zoom: 1;
+      width: 100%;
+      display: table-cell;
+      vertical-align: top;
+      /* width: 80%; */
+      margin: auto;
+    }
+    .header-comment {
+      text-align: left;
+    }
+    .name-user {
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+    }
+    .header-comment button {
+      float: right;
+      margin: 0;
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 400;
+      height: 20px;
+      width: 70px;
+      background: #90CAF9;
+      box-shadow: none;
+      border-radius: 10px;
+      border: none;
+      outline:none;
+    }
+    .header-comment button:hover {
+      background: #0277BD;
+    }
+    .header-comment button img{
+      height: 70%;
+    }
+    .content-cmt {
+      text-align: left;
+    }
+    .time {
+      margin-left: 20px;
+    }
+
+    .reply-content {
+      width: 90%;
+      position: relative;
+      left: 10%;
+      margin-top: 20px;
+    }
+    .textarea-cmt {
+      padding: 10px 10px;
+      min-height: 80px;
+      max-height: 150px;
+      resize: vertical;
+      height: 40px;
+      width: 100%;
+      border: none;
+      background: #F4F4F4;
+      border-bottom: 2px solid #EEE;
+      color: #354052;
+      padding: 0px 10px;
+      opacity: 1;
+    }
+    .box-reply {
+      margin-top: 20px;
+      text-align: left;
+      display: none;
+    }
+    .box-reply p {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: #10161A;
+      text-align: left;
+      border-bottom: solid 2px blue
+    }
+    .main-btn  {
+      display: inline-block;
+      padding: 10px 35px;
+      margin: 3px;
+      border: 2px solid transparent;
+      border-radius: 3px;
+      -webkit-transition: 0.2s opacity;
+      transition: 0.2s opacity;
+      background: #6195FF;
+      color: #FFF;
+      left: 0px;
+    }
+    small {
+      display: block;
     }
 </style>

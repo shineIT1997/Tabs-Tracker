@@ -30,6 +30,7 @@ module.exports = (app) => {
         userControllers.register
     )
     app.post('/editUser' , 
+        upload.single('file'),
         userControllers.editUser
     )
     app.post('/login' , 
@@ -41,6 +42,33 @@ module.exports = (app) => {
     app.post('/getComments' , 
         userControllers.getComments
     )
+    app.post('/user/bookmark' , 
+        userControllers.bookmark
+    )
+    app.post('/user/follow' , 
+        userControllers.follow
+    )
+    app.post('/user/checkBookmark' , 
+        userControllers.checkBookmark
+    )
+    app.post('/user/checkFollow' , 
+        userControllers.checkFollow
+    )
+    app.post('/user/getBookmark' , 
+        userControllers.getBookmark
+    )
+    app.post('/user/getFollowingForHome' , 
+        userControllers.getFollowingForHome
+    )
+    app.post('/user/getAllUsers' , 
+        userControllers.getAllUsers
+    )
+    app.post('/user/deleteUser' , 
+        userControllers.deleteUser
+    )
+    // app.post('/user/getFollowing' , 
+    //     userControllers.getFollowing
+    // )
 // user router
 
 
@@ -52,6 +80,9 @@ module.exports = (app) => {
     )
     app.post('/getPopularSong', 
         songControllers.getPopularSong
+    )
+    app.post('/getSongList', 
+        songControllers.getSongList
     )
     app.post('/getNewSong', 
         songControllers.getNewSong
@@ -68,6 +99,16 @@ module.exports = (app) => {
     app.post('/editSong', 
         upload.single(), //dùng formData phải gọi single
         songControllers.editSong
+    )
+    app.post('/rating', 
+        songControllers.rating
+    )
+    app.post('/checkLove', 
+        songControllers.checkLove
+    )
+    app.post('/testselect', 
+        upload.single(),
+        songControllers.testselect
     )
 
 // song router

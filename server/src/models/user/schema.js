@@ -17,7 +17,7 @@ const users = {
         type: String,
         required: 'Please enter password!'
     },
-    avartar: {
+    avatar: {
         type: String,
     },
     jurisdiction: {
@@ -25,7 +25,7 @@ const users = {
         required: 'Please enter jurisdiction',
         default: 'user'
     },
-    songs: [
+    favorites: [
         {
             type: Schema.Types.ObjectId ,
             ref: 'songs'
@@ -37,7 +37,13 @@ const users = {
             ref: 'songs'
         }
     ],
-    flowwing: [
+    songs: [
+        {
+            type: Schema.Types.ObjectId ,
+            ref: 'songs'
+        }
+    ],
+    following: [
         {
             type: Schema.Types.ObjectId,
             ref: 'users'

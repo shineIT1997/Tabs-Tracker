@@ -1,12 +1,14 @@
 <template>
     <div>
-        <div class="row">
+        <div class="row bg-img">
+          <div class="search">
             <form v-on:submit.prevent="searchSong" class="navbar-form navbar-left">
             <div class="form-group">
                 <input type="text" v-model="search" class="form-control" placeholder="Search" name="search">
             </div>
             <button  class="btn btn-default">Search</button>
             </form>
+          </div>
         </div>
         <component v-bind:is="component" v-bind:result="result" v-bind:title="search"></component>
     </div>
@@ -21,7 +23,7 @@ export default {
 
   components: {
     Search,
-    List
+    List,
   },
   computed: {
     result () {
@@ -78,5 +80,36 @@ export default {
     body {
     font-family: Arial;
     margin: 0;
+    }
+    .row { 
+      height: 100px;
+      margin: auto;
+    }
+    .search {
+      left: 50%;
+      top: 50%;
+      position: relative;
+      -webkit-transform: translate(-50% , -50%);
+      transform: translate(-50% , -50%);
+      width: 800px;
+    }
+    .search form {
+      width: 800px;
+    }
+    .search form input{
+      width: 650px;
+      height: 40px;
+      border-radius: 20px;
+    }
+    .bg-img {
+      background-image: url(../../assets/image/5oPj8Sy.jpg);
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
+      background-position: center;
+      background-size: cover;
+      background-attachment: fixed;
     }
 </style>

@@ -1,19 +1,24 @@
 <template>
   <div>
-        <pre v-if="mess">{{mess}}</pre>
-    <form class="modal-content" v-on:submit.prevent="edit">
+    <pre v-if="info.mess">{{info.mess}}</pre>
+    <form enctype="multipart/form-data" id="edit" class="modal-content" v-on:submit.prevent="edit">
         <div class="container">
-            <div class="left col-sm-8">
+          <div class="upload-btn-wrapper col-sm-3">
+            <img v-bind:src="(info.infoUser.avatar)?info.infoUser.avatar:'../../assets/image/terrorist-avatar-face-round-512.png'" alt="">
+            <span class="btn">Upload a file</span>
+            <input type="file" v-on:change="handleFileUpload()" ref="file"/>
+          </div>
+            <div class="col-sm-4">
                 <label for="userName"><b>User Name</b></label>
-                <input v-model="userName" type="text" placeholder="Enter User Name" name="userName">
+                <input v-model="info.infoUser.usersName" type="text" placeholder="Enter User Name" name="userName">
                 <br>
                 <label for="email"><b>Email</b></label>
-                <input v-model="email" type="text" placeholder="Enter Email" name="email" >
+                <input v-model="info.infoUser.email" type="text" placeholder="Enter Email" name="email" >
                 <br> 
             </div>
             <div class="col-sm-4">
-                <p>Total Song : 12</p>
-                <p>Ngày Đăng ký: date</p>
+                <p>Total Song : <span>{{(info.infoUser.songs)?info.infoUser.songs.length:'0'}}</span></p>
+                <p>Ngày Đăng ký: {{info.infoUser.createdAt}}</p>
                 <button>Edit</button>
             </div>
         </div>
@@ -32,37 +37,31 @@ export default {
         return info
     }
   },
-  async created() {
-    await this.$store.users.dispatch('getUser', localStorage.token)
-    console.log(this.$store.users.state.infoUser);
-    let info = this.$store.users.state.infoUser
-    this.userName =  info.usersName
-    this.email =  info.email
-  },
   data () {
     return {
       userName: '',
       email: '',
+      imgAlbum: ''
     }
   },
-   beforeCreate() {
 
-  },
-//     mounted() {
-//     let info = this.$store.users.state.infoUser
-//     this.userName =  info.usersName
-//     this.email =  info.email
-//   },
   methods: {
     edit () {
-        this.$store.users.dispatch('editUser', {
-          update: {
-            usersName: this.userName,
-            email: this.email,
-          },
-          id: localStorage.token
-        })
+      console.log(this.imgAlbum);
+        let editUser = document.getElementById('edit')
+        let formData = new FormData(editUser)
+        formData.append('file', this.imgAlbum);
+        formData.append('id', localStorage.token);
+        this.$store.users.dispatch('editUser',
+          formData)
+    },
+    handleFileUpload () {
+      console.log(this.$refs.file.files[0] );
+      this.imgAlbum =  this.$refs.file.files[0]    
     }
+  },
+  mounted () {
+    this.$store.users.dispatch('getUser', localStorage.token)
   }
 }
 </script>
@@ -171,11 +170,40 @@ hr {
   clear: both;
   display: table;
 }
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
 
+.btn {
+  border: 2px solid gray;
+  color: gray;
+  background-color: white;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+  width: auto;
+}
+
+.upload-btn-wrapper input {
+  font-size: 160px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+.upload-btn-wrapper img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
 /* Change styles for cancel button and signup button on extra small screens */
 @media screen and (max-width: 300px) {
   .cancelbtn, .signupbtn {
      width: 100%;
   }
+
 }
 </style>

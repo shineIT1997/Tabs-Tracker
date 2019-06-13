@@ -2,16 +2,19 @@
     <div>
         <header-home></header-home>
         <home-content></home-content>
+        <footer-content></footer-content>
     </div>
 </template>
 
 <script>
 import headerHome from './home/header'
 import homeContent from './home/body'
+import footerContent from './home/footer'
 export default {
   components: {
     headerHome,
-    homeContent
+    homeContent,
+    footerContent
   },
 }
 </script>

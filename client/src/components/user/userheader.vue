@@ -6,6 +6,7 @@
                 <h1>User</h1>
                     <div>
                         <a @click="getComponent('infoUser')">Your info</a>
+                        <a v-if="check.userLogin.jurisdiction === 'admin'"  @click="getComponent('managerUser')">Manager User</a>
                         <a @click="getComponent('songList')">Your Song</a>
                         <a @click="getComponent('comment')">Comment</a>
                         <a @click="getComponent('bookmark')">Bookmark</a>                   
@@ -24,16 +25,20 @@ import infoUser  from './detail/infoUser'
 import comment from './detail/comment'
 import songList from './detail/songList'
 import bookmark from './detail/bookmark'
+import managerUser from './detail/mananerUser'
 export default {
   name: 'user-header',
   components: {
       infoUser,
       songList,
       comment,
-      bookmark
+      bookmark,
+      managerUser
   },
-  created () {
-
+  computed: {
+    check () {
+      return this.$store.users.getters.getDataUser
+    }
   },
   data () {
       return {

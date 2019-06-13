@@ -5,18 +5,18 @@ const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 const fs = require('fs')
 
-function jwtSignUse (user) {
-    var tokenFeedback = jwt.sign(user , config.authentication.jwtSecret , {algorithm: 'HS256'})
-    return tokenFeedback
+async function  jwtSignUse (user) {
+    return await jwt.sign(user , config.authentication.jwtSecret , {algorithm: 'HS256'})
+
 }
 module.exports = {
     async create (req , res) {
         try {
-            console.log(req.body);
-            // console.log(req.file.path)
             let info = req.body
             let edit = {} //set vả to save in song-model
-            edit['imgAlbum'] = req.file.path
+            if (req.file) {
+                edit['imgAlbum'] = req.file.path
+            }
             await jwt.verify(info.userID, config.authentication.jwtSecret , function(err, decoded) {         
                 info.userID = decoded
                 console.log(info.userID);
@@ -33,6 +33,8 @@ module.exports = {
                     $push: {songs: response._id}
                 })
                 .then(result => {
+                    console.log(result);
+                    
                     return res.status(200).send({
                         mess: 'Create success'
                     })
@@ -50,29 +52,36 @@ module.exports = {
                 })
             })
         }
-        catch {
-
+        catch (err) {
+            console.log(err);
         }
     },
     async getPopularSong (req , res) {
         try {
             Song.find()
+            .populate({
+                path: 'userID',
+                select: 'usersName'
+            })
             .sort({ rating : -1 })
             .limit(20)
-            .then(async result => {
-                console.log(result);
-                for (let index in result) {
-                    if(fs.existsSync(result[index].imgAlbum)) {
-                        console.log(typeof result[index].imgAlbum);
-                        let img = await fs.readFileSync(result[index].imgAlbum)  
+            .then(async result => { 
+                let acb = result              
+                for (let index in acb) {
+                    acb[index].idUser = await jwtSignUse(acb[index].userID.id)
+                    if(fs.existsSync(acb[index].imgAlbum)) { 
+                        let img = await fs.readFileSync(acb[index].imgAlbum)
                         let encoding_img = await img.toString('base64')
-                        result[index].imgAlbum = 'data:image/jpeg;base64,'.concat(encoding_img)
+                        acb[index].imgAlbum = 'data:image/jpeg;base64,'.concat(encoding_img)
                     }
                     else {
-                        result[index].imgAlbum = ''
+                        acb[index].imgAlbum = ''
+
                     }
                 }
-                return res.status(200).send(result)
+                console.log(acb);
+                res.status(200).send(acb)
+                
             })
             .catch(err => {
                 console.log(err);
@@ -100,6 +109,8 @@ module.exports = {
     },
     async getDetailSong (req , res) {
         try {
+            console.log(req.body.songID);
+            
             Song.findById(req.body.songID)
             .then( async result => {
                 if(result) {
@@ -159,10 +170,129 @@ module.exports = {
                         mess: err.errmsg
                     })
                 })
+                Song.findByIdAndDelete(songID) 
+                .then(result => {
+                    console.log(result);
+                })
+                .catch(err => {
+                    console.log(err);
+                })
             });
         }
         catch {
 
+        }
+    },
+    async checkLove (req , res) {
+        try {
+            let userID = req.body.data
+            if (userID) {
+                jwt.verify(userID, config.authentication.jwtSecret , function(err, decoded) {         
+                    User.findById(decoded)
+                    .then(result => {
+                        if (result) {
+                            return res.status(200).send({
+                                checkFavorites: result.favorites
+                            })
+                        }
+                    })  
+                })           
+            }      
+        }
+        catch (err) {
+            console.log(err);
+        }
+    },
+    async rating (req , res) {
+        try {
+            console.log(req.body);
+            let userID =req.body.userID
+            let songID =req.body.songID
+            if (userID) {
+                jwt.verify(userID, config.authentication.jwtSecret , function(err, decoded) {         
+                    User.findById(decoded)
+                    .then(async result => {
+                        if(result.favorites.indexOf(songID) !== -1) {
+                            let song = await Song.findById(songID)
+                            if (song) {
+                                song.rating -=1
+                                let save = await song.save()
+                            }
+                            User.findByIdAndUpdate(
+                                decoded ,
+                                { $pull:
+                                   {
+                                    favorites : songID
+                                   }
+                                }
+                             )
+                             .then(removeFavorites => {
+                               if(removeFavorites) {
+                                User.findById(decoded)
+                                .then(response =>  {
+                                    return res.status(200).send({
+                                        checkFavorites: response.favorites
+                                    })
+                                })
+                                .catch(err => {
+                                    return res.status(500).send(err)
+                                })
+                               }
+                             })
+                             .catch(err => {
+                                return res.status(500).send(err)
+                             })
+                          }
+                          else {
+                            let song = await Song.findById(songID)
+                            if (song) {
+                                song.rating +=1
+                                let save = await song.save()
+                            }
+                            User.findByIdAndUpdate(
+                                decoded ,
+                                { $push:
+                                   {
+                                    favorites : songID
+                                   }
+                                }
+                             )
+                             .then(updateFavorites => {
+                               if(updateFavorites) {
+                                User.findById(decoded)
+                                .then(response =>  {
+                                    return res.status(200).send({
+                                        checkFavorites: response.favorites
+                                    })
+                                })
+                                .catch(err => {
+                                    return res.status(500).send(err)
+                                })
+                               }
+                             })
+                             .catch(err => {
+                                return res.status(500).send(err)
+                             })
+                          }
+                    })
+                    .catch(err => {
+                        return res.status(200).send({
+                            mess: err.errmsg
+                        })
+                    })
+                });
+            }
+            else {
+                let song = await Song.findById(songID)
+                if (song) {
+                    song.rating +=1
+                    let save = await song.save()
+                    console.log(save);
+                }
+            }      
+        }
+        catch (err) {
+            console.log(err);
         }
     },
     async editSong (req , res) {
@@ -192,5 +322,37 @@ module.exports = {
         catch {
 
         }
+    },
+    async getSongList (req , res) {
+        try {
+            if(req.body.rule === 'TopRate') {
+                Song.find()
+                .populate({
+                    path: 'userID',
+                    select: 'usersName'
+                })
+                .sort({ rating : -1 })
+                .then(result => {
+                    return res.status(200).send(result)
+                })
+            }
+            else if (req.body.rule === 'NewSong') {
+                Song.find()
+                .populate({
+                    path: 'userID',
+                    select: 'usersName'
+                })
+                .sort({ createdAt : -1 })
+                .then(result => {
+                    return res.status(200).send(result)
+                })
+            }
+        } catch (error) {
+            return res.status(500).send(error)
+        }
+
+    },
+    async testselect (req , res) {
+        console.log(req);
     }
 }

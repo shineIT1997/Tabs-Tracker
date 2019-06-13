@@ -1,6 +1,6 @@
 <template>
 <div>
-  <header-home></header-home>
+  <nav-header></nav-header>
   <form class="modal-content animate" v-on:submit.prevent="login">
     <div class="container panel panel-primary">
       <div class="panel-heading">
@@ -36,13 +36,13 @@
 </template>
 
 <script>
-import headerHome from '../home/header'
+import navHeader from '../home/nav'
 import { Validator } from 'vee-validate'
 // import { mapGetters } from 'vuex'
 export default {
   name: 'login',
   components: {
-    headerHome
+    navHeader
   },
   data () {
     return {

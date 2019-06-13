@@ -12,6 +12,9 @@ const  getPopularSong = () => {
 const  getNewSong = () => {
     return api().post('getNewSong')
 }
+const  getSongList = (credentials) => {
+    return api().post('getSongList' , credentials)
+}
 const  getDetailSong = (credentials) => {
     return api().post('getDetailSong' ,credentials)
 }
@@ -19,12 +22,20 @@ const  deleteSong = (credentials) => {
     return api().post('deleteSong' ,credentials)
 }
 const  findSong = (credentials) => {
-    console.log(credentials);
     return api().get('findSong' , {
         params: {
             search: credentials
         }
     })
+}
+const  rating = (credentials) => {
+    return api().post('rating' , credentials)
+}
+const  testselect = (credentials) => {
+    return api().post('testselect' , credentials)
+}
+const  checkLove = (credentials) => {
+    return api().post('checkLove' , credentials)
 }
 export default {
     createSong,
@@ -33,5 +44,9 @@ export default {
     findSong,
     deleteSong,
     editSong,
-    getNewSong
+    getNewSong,
+    rating,
+    checkLove,
+    getSongList,
+    testselect
 }

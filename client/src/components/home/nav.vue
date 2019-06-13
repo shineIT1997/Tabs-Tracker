@@ -1,28 +1,29 @@
 <template>
     <div>
-        <nav class="navbar navbar-inverse">
-        <div class="container-fluid">
-            <div class="navbar-header">
-            </div>
-            <ul class="nav navbar-nav">
+        <nav id="nav" class="navbar ">
+        <div class="container">
+          <div class="navbar-brand">
+						<a @click="navigateTo({name: 'home',})" >
+							<img class="logo-alt" src="../../assets/image/guitar.png" alt="logo">
+						</a>
+					</div>
+          <ul class="main-nav nav navbar-nav navbar-right">
             <li class="active"><a @click="navigateTo({name: 'home',}) ">Home</a></li>
-            <li><a @click="navigateTo({name: 'home', query : {action : 'TopRate'}})">Top Rating</a></li>
-            <li><a @click="navigateTo({name: 'home', query : {action : 'NewSong'}})">New Song</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-            <li v-if="loginCheck"><a class="btn btn-primary" role="button" @click="navigateTo({name: 'profileUser',})">Profile</a></li>
-            <li v-if="loginCheck" ><a @click="navigateTo({name: 'profileUser', query : {component : 'comment'}})" class="btn noty"><span class="glyphicon glyphicon-bell ">
+            <li><a @click="navigateTo({name: 'songs', query : {action : 'TopRate'}})">Top Rating</a></li>
+            <li><a @click="navigateTo({name: 'songs', query : {action : 'NewSong'}})">New Song</a></li>
+            
+
+            <li v-if="loginCheck.token"><a class="btn btn btn-primary" @click="navigateTo({name: 'profileUser',})">{{loginCheck.userLogin.userName}}</a></li>
+            <li v-if="loginCheck.token" ><a @click="navigateTo({name: 'profileUser', query : {component : 'comment'}})" class="btn noty"><span class="glyphicon glyphicon-bell ">
               <span class="notytext">{{(notiComment.length)?notiComment.length:0}} comment is waiting to approved</span>
               </span></a></li>
-            <li v-if="loginCheck"><a role="button" @click="logout">Logout</a></li>
-            <li v-if="!loginCheck"><a class="btn btn-primary" role="button" @click="navigateTo({name: 'login',})">Login</a></li>
-            <li v-if="!loginCheck"><a @click="navigateTo({name: 'register',})">Register</a></li>
-            </ul>
+            <li v-if="loginCheck.token"><a role="button" @click="logout">Log Out</a></li>
+				  </ul>
+
         </div>
         </nav>
     </div>
 </template>
-
 <script>
 import { Store } from 'vuex';
 import List from './list'
@@ -35,11 +36,12 @@ export default {
   },
   computed: {
     loginCheck () {
-      return this.$store.users.getters.getDataUser.token
+      let a = this.$store.users.getters.getDataUser
+      return a
     },
     notiComment () {
-      let countNoty =this.$store.users.getters.getDataUser.comments 
-      if(countNoty > 0) {
+      let countNoty = this.$store.users.getters.getDataUser.comments 
+      if(countNoty.length > 0) {
         $(".notytext").css({ visibility: 'visible' , background: '#5bc0de'})
         $(".noty").addClass('btn-info')
         return countNoty
@@ -90,15 +92,22 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-    body {
-    font-family: Arial;
-    margin: 0;
-    }
+body {
+  font-family: Arial;
+  margin: 0;
+  color: white;
+}
 .noty {
   position: relative;
   display: inline-block;
 }
-
+.light {
+  height: 40px;
+  width: 40px;
+}
+.container {
+  max-width: 1200px;
+}
 .noty .notytext {
   visibility: hidden;
   background-color: black;
@@ -115,5 +124,46 @@ export default {
 .noty:hover .notytext {
   visibility: visible;
 }
-
+#nav.navbar {
+    border: none;
+    border-radius: 0;
+    margin-bottom: 0px;
+}
+.user {
+  border-left: double 2px black;
+}
+#nav {
+  -webkit-transition: 0.2s padding;
+  transition: 0.2s padding;
+  z-index: 999;
+  color: #fff;
+}
+.navbar {
+  position: relative;
+  min-height: 50px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+}
+.container {
+  padding: 0px 15px;
+  margin-top: 25px;
+  margin-right: auto;
+  margin-left: auto;
+}
+.btn:hover {
+ color: black
+}
+.logo-alt {
+  width: 50px;
+  height: 50px;
+}
+.navbar-brand {
+  padding: 0px;
+}
+.navbar-center {
+  display: inline-block;
+  float: none;
+  vertical-align: top;
+  text-align: center;
+}
 </style>

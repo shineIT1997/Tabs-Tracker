@@ -9,13 +9,14 @@ import {sync} from 'vuex-router-sync'
 import store from './store'
 import VeeValidate from 'vee-validate'
 import VueCookies from 'vue-cookies'
-import VueYouTubeEmbed from 'vue-youtube-embed'
+import VueYoutube from 'vue-youtube'
+ 
 import BootstrapVue from 'bootstrap-vue'
 
 console.log(router);
 
 Vue.use(BootstrapVue)
-Vue.use(VueYouTubeEmbed)
+Vue.use(VueYoutube)
 Vue.use(VueCookies)
 Vue.use(VeeValidate, {
   events: 'change|blur'

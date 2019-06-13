@@ -10,8 +10,8 @@ export default new Vuex.Store({
     listNewSong: null,
     songDetail: null,
     mess: null,
-    pagination: Number
-
+    pagination: Number,
+    checkFavorites: null
   },
   getters: {
     getDataSong: state => {
@@ -21,26 +21,19 @@ export default new Vuex.Store({
   mutations: {
     async setPopularListPoSong (state , data) {
       let perPage = data.data.perPage //tổng số items trên trang
-      console.log({perPage: perPage});
-      
       let currentPage = data.data.currentPage -1 //trang hien tai
       console.log({currentPage: currentPage});
       
       let items = {}
       let allSong = data.result
       let count = perPage*currentPage //mốc đếm để get dữ liêu cho page
-      console.log(count);
       for (let i = 0; i < perPage; i++){
         if(allSong[count + i]) {
           items[i] = allSong[count + i]
         }
       }
-      console.log(allSong.length);
       state.pagination = Math.ceil(allSong.length/perPage) 
-      console.log({pagination : state.pagination});
-      console.log({items: items});
-      
-      state.popularListSong = items
+      state.popularListSong = items 
     },
     async setNewSong (state , data) {
       state.listNewSong = data
@@ -53,6 +46,9 @@ export default new Vuex.Store({
     },
     async getMess (state , data) {
       state.mess = data
+    },
+    async checkFavorites (state , data) {
+      state.checkFavorites = data
     }
   },
   actions: {
@@ -117,7 +113,44 @@ export default new Vuex.Store({
       try {
         let result = await songsAPI.getNewSong()
         commit('setNewSong' , result.data)
-        console.log(result);
+      }
+      catch (err) {
+        console.log(err);
+      }
+    },
+    async getSongList ({commit}, data) {
+      try {
+        let result = await songsAPI.getSongList(data)
+        commit('setPopularListPoSong' , {
+          result: result.data,
+          data: data
+        })
+      }
+      catch (err) {
+        console.log(err);
+      }
+    },
+    async rating ({commit}, data) {
+      try {
+        let result = await songsAPI.rating(data)
+        commit('checkFavorites' , result.data.checkFavorites)
+      }
+      catch (err) {
+        console.log(err);
+      }
+    },
+    async checkLove ({commit}, data) {
+      try {
+        let result = await songsAPI.checkLove({data})
+        commit('checkFavorites' , result.data.checkFavorites)
+      }
+      catch (err) {
+        console.log(err);
+      }
+    },
+    async testselect ({commit}, data) {
+      try {
+        let result = await songsAPI.testselect({data})
       }
       catch (err) {
         console.log(err);

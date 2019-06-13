@@ -52,11 +52,18 @@ module.exports = {
             })
         })
     },
+
     async getCommentForSong (req , res) {
         console.log(req.body);
         Comment.find({ $and: [ { songID: req.body.songID}, { show: true}]})
         .populate({ path: 'userID' , select: 'usersName'})
-        .populate({path: 'reply' , options: {$sort: {createdAt : 1}}})
+        .populate({ path: 'reply', 
+                    options: {$sort: {createdAt : 1}},
+                    populate: { path: 'userID',
+                                select: 'usersName'
+                    }
+        })
+        .sort({createdAt : -1})
         .then(result => {
             console.log(result);
             return res.status(200).send(result)

@@ -5,6 +5,7 @@ import Login from '@/components/user/login'
 import Register from '@/components/user/register'
 import profile from '@/components/user/profile'
 import createSong from '@/components/song/createNewSong'
+import SongList from '@/components/song/SongList'
 import songDetail from '@/components/song/songDetail'
 
 Vue.use(Router)
@@ -18,19 +19,33 @@ const routers = new Router({
       component: Home
     },
     {
+      path: '/songs',
+      name: 'songs',
+      component: SongList
+    },
+    {
       path: '/register',
       name: 'register',
-      component: Register
+      component: Register,
+      meta: {
+        login: true
+      }
     }, // user register
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      meta: {
+        login: true
+      }
     }, // user login
     {
       path: '/createSong',
       name: 'createSong',
-      component: createSong
+      component: createSong,
+      meta: {
+        requiresAuth: true
+      }
     }, // create song
     {
       path: '/user/profile',
@@ -56,11 +71,21 @@ routers.beforeEach((to, from, next) => {
       next({
         path: '/login',
       })
-    } else {
+    } else  {
       next()
     }
-  } else {
-    next() // make sure to always call next()!
+  } else if (to.matched.some(record => record.meta.login)) {
+    if(localStorage.token) {
+      next({
+        path: '/',
+      })
+    }
+    else {
+      next()
+    }
+  }
+  else {
+    next()
   }
 })
 
