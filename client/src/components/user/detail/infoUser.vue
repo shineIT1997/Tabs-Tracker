@@ -27,8 +27,9 @@ export default {
   name: 'info-user',
   computed: {
     // mix the getters into computed with object spread operator
-    mess () {
-        return this.$store.users.state.mess
+    info  () {
+        let info = this.$store.users.getters.getDataUser
+        return info
     }
   },
   async created() {
