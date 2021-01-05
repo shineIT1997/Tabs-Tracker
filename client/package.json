@@ -14,7 +14,7 @@
     "scss": "node-sass -watch './src/assets/scss' -o './src/assets/css'"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.21",
     "eslint": "^5.16.0",
